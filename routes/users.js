@@ -33,8 +33,19 @@ router.post("/create", async (req, res, next) => {
   try {
     const { username, password, mobile, email } = req.body;
 
-    // TODO : این کد برای ولیدیشن یوزر تکراری میباشد
     let user;
+
+    // TODO : این کد ولیدیشن ایمیل و شماره تماس میباشد
+    const mobileRegexp = /^09[0-9]{9}/;
+    const emailRegexp = /^[a-z]+[a-z0-9\_\.]{5,}\@[a-z]{2,8}\.[a-z]{2,8}/;
+    if (!mobileRegexp.test(mobile)) {
+      throw { status: 400, message: "شماره موبایل وارد شده اشتباه است" };
+    }
+    if (!emailRegexp.test(email)) {
+      throw { status: 400, message: "ایمیل وارد شده اشتباه است" };
+    }
+
+    // TODO : این کد برای ولیدیشن یوزر تکراری میباشد
     user = await userModel.findOne({ username });
     if (user) {
       throw { status: 400, message: "نام کاربری قبلا استفاده شده است" };
