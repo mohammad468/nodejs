@@ -85,4 +85,28 @@ router.get("/:id", async (req, res, next) => {
   }
 });
 
+router.delete("/:id", async (req, res, next) => {
+  try {
+    const id = req.params.id;
+    if (!isValidObjectId(id)) {
+      throw { status: 400, message: "شناسه ارسال شده درست نمیباشد" };
+    }
+    const user = await userModel.findById(id);
+    if (!user) {
+      throw { status: 404, message: "کاربری با این مشخصات وجود نداشت" };
+    }
+    const result = await userModel.deleteOne({ _id: id });
+    if (result.deletedCount > 0) {
+      return res.json({
+        status: 200,
+        success: true,
+        message: "کاربر با موفقیت حذف شد",
+      });
+    }
+    throw { status: 400, message: "کاربر حذف نشد" };
+  } catch (error) {
+    next(error);
+  }
+});
+
 module.exports = router;
