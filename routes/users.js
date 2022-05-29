@@ -51,7 +51,7 @@ router.post("/create", async (req, res, next) => {
 
 router.get("/", async (req, res, next) => {
   try {
-    const users = await userModel.find({});
+    const users = await userModel.find({}).sort({ _id: -1 });
     return res.json(users);
   } catch (error) {
     next(error);
