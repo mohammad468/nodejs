@@ -4,31 +4,6 @@ const path = require("path");
 const res = require("express/lib/response");
 const { userModel } = require("../models/user");
 
-router.get("/", async (req, res, next) => {
-  try {
-    const users = await axios
-      .get("https://jsonplaceholder.typicode.com/users")
-      .then((response) => response.data);
-    return res.json(users);
-  } catch (error) {
-    next(error);
-  }
-});
-
-router.get("/:id", async (req, res, next) => {
-  try {
-    const id = req.params.id;
-    const users = await axios
-      .get("https://jsonplaceholder.typicode.com/users")
-      .then((response) => response.data);
-    const user = users.find((item) => item.id == id);
-    if (!user) throw { status: 404, message: "user not found" };
-    return res.json(user);
-  } catch (error) {
-    next(error);
-  }
-});
-
 router.post("/create", async (req, res, next) => {
   try {
     const { username, password, mobile, email } = req.body;
@@ -69,6 +44,29 @@ router.post("/create", async (req, res, next) => {
       return res.json(userCreatResult);
     }
     throw { status: 500, message: "ایجاد کاربر انجام نشد" };
+  } catch (error) {
+    next(error);
+  }
+});
+
+router.get("/", async (req, res, next) => {
+  try {
+    const users = await userModel.find({});
+    return res.json(users);
+  } catch (error) {
+    next(error);
+  }
+});
+
+router.get("/:id", async (req, res, next) => {
+  try {
+    const id = req.params.id;
+    const users = await axios
+      .get("https://jsonplaceholder.typicode.com/users")
+      .then((response) => response.data);
+    const user = users.find((item) => item.id == id);
+    if (!user) throw { status: 404, message: "user not found" };
+    return res.json(user);
   } catch (error) {
     next(error);
   }
