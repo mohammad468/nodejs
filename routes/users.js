@@ -3,6 +3,7 @@ const { default: axios } = require("axios");
 const path = require("path");
 const res = require("express/lib/response");
 const { userModel } = require("../models/user");
+const { hashString } = require("../modules/utils");
 
 router.post("/create", async (req, res, next) => {
   try {
@@ -33,10 +34,18 @@ router.post("/create", async (req, res, next) => {
     if (user) {
       throw { status: 400, message: "شماره موبایل قبلا استفاده شده است" };
     }
+    if (password.length < 6 || password.length > 16) {
+      throw {
+        status: 400,
+        message:
+          "رمز عبور شما نمیتواند کمتر از شش و بیش از شانزده کاراکتر باشد",
+      };
+    }
+    const hashPassword = hashString(password);
 
     const userCreatResult = await userModel.create({
       username,
-      password,
+      password: hashPassword,
       email,
       mobile,
     });
