@@ -4,6 +4,7 @@ const path = require("path");
 const res = require("express/lib/response");
 const { userModel } = require("../models/user");
 const { hashString } = require("../modules/utils");
+const { isValidObjectId } = require("mongoose");
 
 router.post("/create", async (req, res, next) => {
   try {
@@ -70,11 +71,14 @@ router.get("/", async (req, res, next) => {
 router.get("/:id", async (req, res, next) => {
   try {
     const id = req.params.id;
-    const users = await axios
-      .get("https://jsonplaceholder.typicode.com/users")
-      .then((response) => response.data);
-    const user = users.find((item) => item.id == id);
-    if (!user) throw { status: 404, message: "user not found" };
+    if (!isValidObjectId(id)) {
+      throw { status: 400, message: "شناسه کاربر را به درستی وارد کنید" };
+    }
+    const user = await userModel.findOne(
+      { _id: id },
+      { password: 0, createdAt: 0, updatedAt: 0, __v: 0 }
+    );
+    if (!user) throw { status: 404, message: "کاربری یافت نشد" };
     return res.json(user);
   } catch (error) {
     next(error);
