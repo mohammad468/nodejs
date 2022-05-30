@@ -2,7 +2,6 @@ const router = require("express").Router();
 const { userModel } = require("../models/user");
 const { hashString } = require("../modules/utils");
 const { isValidObjectId } = require("mongoose");
-const { object } = require("joi");
 
 router.post("/create", async (req, res, next) => {
   try {
