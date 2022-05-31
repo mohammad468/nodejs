@@ -178,10 +178,21 @@ async function updateUser(req, res, next) {
   }
 }
 
+async function updateProfileImage(req, res, next) {
+  try {
+    return res.json({
+      file: JSON.stringify(req.files),
+    });
+  } catch (error) {
+    next(error);
+  }
+}
+
 module.exports = {
   createUser,
   listOfUser,
   getUserById,
   deleteUserById,
   updateUser,
+  updateProfileImage,
 };
