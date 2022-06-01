@@ -1,3 +1,4 @@
+const { string } = require("joi");
 const { Schema, model } = require("mongoose");
 const UserSchema = new Schema(
   {
@@ -8,6 +9,7 @@ const UserSchema = new Schema(
     password: { type: String, required: true },
     email: { type: String, required: true },
     mobile: { type: String, required: true },
+    profile_image: { type: String, default: "default.jpg" },
   },
   {
     timestamps: true,

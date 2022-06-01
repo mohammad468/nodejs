@@ -76,6 +76,12 @@ async function getUserById(req, res, next) {
       { password: 0, createdAt: 0, updatedAt: 0, __v: 0 }
     );
     if (!user) throw { status: 404, message: "کاربری یافت نشد" };
+    // console.log(req.protocol, req.get("host"));
+    user.profile_image =
+      req.protocol +
+      "://" +
+      req.get("host") +
+      user.profile_image.replace(/[\\\\]/gm, "/");
     return res.json(user);
   } catch (error) {
     next(error);
@@ -181,9 +187,26 @@ async function updateUser(req, res, next) {
 
 async function updateProfileImage(req, res, next) {
   try {
+    const { id } = req.params;
+    if (!isValidObjectId(id)) {
+      throw { status: 400, message: "شناسه ارسال شده صحیح نمیباشد" };
+    }
     const prefixPath = path.join(__dirname, "..");
-    console.log(prefixPath);
-    console.log(req.file.path.substring(prefixPath.length));
+    // console.log(prefixPath);
+    // console.log(req.file.path.substring(prefixPath.length));
+    let image;
+    if (req.file) {
+      image = req.file.path.substring(prefixPath.length);
+    } else {
+      throw { status: 400, message: "لطفا یک فایل را انتخاب کنید" };
+    }
+    const result = await userModel.updateOne(
+      { _id: id },
+      { $set: { profile_image: image } }
+    );
+    if (result.modifiedCount <= 0) {
+      throw { status: 400, message: "بروزرسانی اتفاق نیوفتاد" };
+    }
     return res.json({
       file: JSON.stringify(req.files),
     });
