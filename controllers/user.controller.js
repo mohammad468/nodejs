@@ -1,6 +1,7 @@
 const { userModel } = require("../models/user");
 const { hashString } = require("../modules/utils");
 const { isValidObjectId } = require("mongoose");
+const path = require("path");
 
 async function createUser(req, res, next) {
   try {
@@ -180,6 +181,9 @@ async function updateUser(req, res, next) {
 
 async function updateProfileImage(req, res, next) {
   try {
+    const prefixPath = path.join(__dirname, "..");
+    console.log(prefixPath);
+    console.log(req.file.path.substring(prefixPath.length));
     return res.json({
       file: JSON.stringify(req.files),
     });
