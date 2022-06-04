@@ -9,7 +9,7 @@ async function createUser(req, res, next) {
 
     let user;
 
-    // TODO : این کد ولیدیشن ایمیل و شماره تماس میباشد
+    // TODO : این کد ولیدیشن ایمیل ، شماره تماس و پسورد میباشد
     const mobileRegexp = /^09[0-9]{9}/;
     const emailRegexp = /^[a-z]+[a-z0-9\_\.]{5,}\@[a-z]{2,8}\.[a-z]{2,8}/;
     if (!mobileRegexp.test(mobile)) {
@@ -17,6 +17,13 @@ async function createUser(req, res, next) {
     }
     if (!emailRegexp.test(email)) {
       throw { status: 400, message: "ایمیل وارد شده اشتباه است" };
+    }
+    if (password.length < 6 || password.length > 16) {
+      throw {
+        status: 400,
+        message:
+          "رمز عبور شما نمیتواند کمتر از شش و بیش از شانزده کاراکتر باشد",
+      };
     }
 
     // TODO : این کد برای ولیدیشن یوزر تکراری میباشد
@@ -32,13 +39,7 @@ async function createUser(req, res, next) {
     if (user) {
       throw { status: 400, message: "شماره موبایل قبلا استفاده شده است" };
     }
-    if (password.length < 6 || password.length > 16) {
-      throw {
-        status: 400,
-        message:
-          "رمز عبور شما نمیتواند کمتر از شش و بیش از شانزده کاراکتر باشد",
-      };
-    }
+
     const hashPassword = hashString(password);
 
     const userCreatResult = await userModel.create({

@@ -1,6 +1,6 @@
 const express = require("express");
 const http = require("http");
-const userRoutes = require("./routes/users");
+const Routes = require("./routes/router");
 const mongoose = require("mongoose");
 const { notFound, expressErrorHandler } = require("./modules/errorHandler");
 const path = require("path");
@@ -18,7 +18,7 @@ app.get("/", (req, res, next) => {
   res.send("hello");
 });
 
-app.use("/users", userRoutes);
+app.use("/", Routes);
 app.use(expressErrorHandler);
 app.use(notFound);
 
