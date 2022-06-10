@@ -1,11 +1,23 @@
 const bcrypt = require("bcrypt");
 const multer = require("multer");
 const path = require("path");
+const jwt = require("jsonwebtoken");
+const { SECRET_KEY, EXPIRES_IN } = require("../configs/constants");
 
 function hashString(data) {
   const salt = bcrypt.genSaltSync(13);
   const hashed = bcrypt.hashSync(data, salt);
   return hashed;
+}
+
+function compareDataWithHash(data, hashedString) {
+  return bcrypt.compareSync(data, hashedString);
+}
+
+function jwtTokenGenerator(payload) {
+  // new Date().getDate() + 1000 * 60 * 60 * 24 * day; //expiresIn nth days
+  const { username } = payload;
+  return jwt.sign({ username }, SECRET_KEY, { expiresIn: EXPIRES_IN });
 }
 
 const storage = multer.diskStorage({
@@ -27,4 +39,6 @@ const upload = multer({ storage });
 module.exports = {
   hashString,
   upload,
+  compareDataWithHash,
+  jwtTokenGenerator,
 };
