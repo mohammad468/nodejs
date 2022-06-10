@@ -20,6 +20,24 @@ function jwtTokenGenerator(payload) {
   return jwt.sign({ username }, SECRET_KEY, { expiresIn: EXPIRES_IN });
 }
 
+function verifyJwtToken(token) {
+  try {
+    const result = jwt.verify(token, SECRET_KEY);
+    if (!result?.username) {
+      throw {
+        status: 401,
+        message: "ورود به حساب کاربری انجام نشد مجددا وارد شوید",
+      };
+    }
+    return result;
+  } catch (error) {
+    throw {
+      status: 401,
+      message: "ورود به حساب کاربری با خطا مواجه شد لطفا مجددا تلاش نمایید",
+    };
+  }
+}
+
 const storage = multer.diskStorage({
   destination: (req, file, callback) => {
     const thisYear = new Date().getFullYear();
@@ -41,4 +59,5 @@ module.exports = {
   upload,
   compareDataWithHash,
   jwtTokenGenerator,
+  verifyJwtToken,
 };

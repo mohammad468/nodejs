@@ -1,5 +1,5 @@
 const { userModel } = require("../models/user");
-const { hashString } = require("../modules/utils");
+const { hashString, jwtTokenGenerator, compareDataWithHash } = require("../modules/utils");
 
 async function userRegister(req, res, next) {
   try {
@@ -62,6 +62,33 @@ async function userRegister(req, res, next) {
   }
 }
 
+async function userLogin(req, res, next) {
+  try {
+    const { username, password } = req.body;
+    let user = await userModel.findOne({ username });
+    if (!user) {
+      throw { status: 401, message: "نام کاربری یا رمز عبور صحیح نیست" };
+    }
+    if (!compareDataWithHash(password, user.password)) {
+      throw { status: 401, message: "نام کاربری یا رمز عبور صحیح نیست" };
+    }
+
+    let token = jwtTokenGenerator(user);
+    user.token = token;
+    user.save();
+
+    return res.status(200).json({
+      status: 200,
+      success: true,
+      message: "ورود شما موفقیت آمیز بود",
+      token,
+    });
+  } catch (error) {
+    next(error);
+  }
+}
+
 module.exports = {
   userRegister,
+  userLogin,
 };
